@@ -12,64 +12,83 @@ import xlsxwriter
 
     
 def plotData(path, idx2): #plots raw data, idx2 is first accelerometer column, should be 0
-    subdata = pd.read_excel(path)
-    time = subdata.iloc[:,0]
+    data = pd.read_csv(path)
+    freq = data.iloc[0][1]
+    subdata = data.drop(index = [0])
+    subdata['time'] = np.arange(subdata.shape[0])/freq
+    time = subdata.iloc[:,3]
     volt1 = subdata.iloc[:,idx2]
     volt2 = subdata.iloc[:,idx2+1]
     volt3 = subdata.iloc[:,idx2+2]
-    plt.plot(time,volt1)
-    plt.plot(time,volt2)
-    plt.plot(time,volt3)
+    
+    #print(subdata)
+    derivativex = []
+    for i in range(2, len(volt1)):
+        derivativex.append((volt1[i] - volt1[i-1])/0.03125)
+    time2 = time.drop(index = [(time.size-1), (time.size-2)])
+    print(len(derivativex))
+    print(time2.size)
+    
+    #plt.plot(time,voltx)
+    #plt.plot(time,volty)
+    #plt.plot(time,voltz)
+    #print(volt1)
     
     
 def plotDer(path, idx2, color, scale):
-    #path, column index, color, scale
-    subdata = pd.read_excel(path)
-    time = subdata.iloc[:,0]
+    #path, column index, color, scale; idx2 should be 0
+    data = pd.read_csv(path)
+    freq = data.iloc[0][1]
+    subdata = data.drop(index = [0])
+    subdata['time'] = np.arange(subdata.shape[0])/freq
+    time = subdata.iloc[:,3]
     volt1 = subdata.iloc[:,idx2]
     volt2 = subdata.iloc[:,idx2+1]
     volt3 = subdata.iloc[:,idx2+2]
     
-    derivativex = []
-    for i in range(1, len(volt1)):
-        derivativex.append((volt1[i] - volt1[i-1])/0.0125)
-    time2 = time.drop((time.size-1))
     
-    #plt.plot(time2, derivativex)
+    
+    derivativex = []
+    for i in range(2, len(volt1)):
+        derivativex.append((volt1[i] - volt1[i-1])/0.03125)
+    time2 = time.drop(index = [(time.size-1), (time.size-2)])
+    
+    plt.plot(time2, derivativex)
     #plt.show()
     #plt.savefig("seq_charts_2s/"+path+"derivative.png")
     #plt.clf()
     
     derivativey = []
-    for i in range(1, len(volt2)):
-        derivativey.append((volt2[i] - volt2[i-1])/0.0125)
-    time2 = time.drop((time.size-1))
+    for i in range(2, len(volt2)):
+        derivativey.append((volt2[i] - volt2[i-1])/0.03125)
+    time2 = time.drop(index = [(time.size-1), (time.size-2)])
 
-    #plt.plot(time2, derivativey)
+    plt.plot(time2, derivativey)
     #plt.show()
     #plt.savefig("seq_charts_2s/"+path+"derivative.png")
     #plt.clf()
     
     derivativez = []
-    for i in range(1, len(volt1)):
-        derivativez.append((volt3[i] - volt3[i-1])/0.0125)
-    time2 = time.drop((time.size-1))
+    for i in range(2, len(volt1)):
+        derivativez.append((volt3[i] - volt3[i-1])/0.03125)
+    time2 = time.drop(index = [(time.size-1), (time.size-2)])
 
-    #plt.plot(time2, derivativez)
+    plt.plot(time2, derivativez)
     #plt.show()
     #plt.savefig("seq_charts_2s/"+path+"derivative.png")
     #plt.clf()
+    
     resultant = []
     time3 = time2.drop(time2.size-1)
     for i in range(1, len(derivativex)):
         resultant.append(np.sqrt(derivativex[i]**2 + derivativey[i]**2 + derivativez[i]**2))
-    plt.plot(time3, resultant, color, alpha=0.5)
-    plt.ylim(0, scale)
+    #plt.plot(time3, resultant, color, alpha=0.5)
+    #plt.ylim(0, scale)
     
 
         
 def plotFft(path, idx2, color, scale, xscale): 
-    subdata = pd.read_excel(path)
+    subdata = pd.read_csv(path)
     time = subdata.iloc[:,0]
     volt1 = subdata.iloc[:,idx2]
     volt2 = subdata.iloc[:,idx2+1]
@@ -223,13 +242,3 @@ def allFft(path, idx, idx2, color1, scale, xscale): #outputs all relative fft va
     
         
         
-    
-    
-    
-    
-        
-
-    
-    
-
-
